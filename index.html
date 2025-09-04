@@ -3,86 +3,50 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Crypto Live Prices</title>
+  <title>Socket.IO Coins Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdn.socket.io/4.5.3/socket.io.min.js" crossorigin="anonymous"></script>
-  <script src="index.js" defer></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #fafafa;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-    }
-
-    #status {
-      display: inline-block;
-      padding: 5px 10px;
-      border-radius: 4px;
-      background: #ddd;
-      margin-bottom: 20px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      background: white;
-    }
-
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      font-size: 14px;
-    }
-
-    th {
-      background: #f0f0f0;
-      text-align: left;
-    }
-
-    img {
-      width: 24px;
-      height: 24px;
-    }
-
-    .positive {
-      color: green;
-    }
-
-    .negative {
-      color: red;
-    }
-  </style>
+  <script src="https://cdn.socket.io/4.5.3/socket.io.min.js"
+    integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi"
+    crossorigin="anonymous"></script>
+  <script src="index.js"></script>
 </head>
 
 <body>
-  <h1>Crypto Prices (Live)</h1>
-  <div id="status">Disconnected</div>
-  <br><br>
-  <button id="connect" onclick="connect()">Connect</button>
-  <button id="disconnect" onclick="disconnect()" disabled>Disconnect</button>
+  <h1>Crypto Coins Websocket Demo</h1>
 
-  <h2>Coins</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Logo</th>
-        <th>Name</th>
-        <th>Symbol</th>
-        <th>Price (USD)</th>
-        <th>Market Cap</th>
-        <th>1h %</th>
-        <th>24h Volume</th>
-        <th>Sparkline</th>
-        <th>Updated</th>
-      </tr>
-    </thead>
-    <tbody id="coins-table"></tbody>
-  </table>
+  <!-- Connection Status -->
+  <p>
+    <label for="status">Status: </label>
+    <input type="text" id="status" name="status" value="Disconnected" readonly="readonly" style="width: 300px" />
+  </p>
+  <p>
+    <button id="connect" onclick="connect()">Connect</button>
+    <button id="disconnect" onclick="disconnect()" disabled>Disconnect</button>
+  </p>
+
+  <hr />
+
+  <!-- Pagination-based room -->
+  <h2>Join Room (limit/offset)</h2>
+  <p>
+    <label for="limit">Limit:</label>
+    <input type="number" id="limit" value="6" style="width: 80px" />
+    <label for="offset">Offset:</label>
+    <input type="number" id="offset" value="0" style="width: 80px" />
+    <button onclick="joinRoom()">Join Room</button>
+  </p>
+  <pre id="roomData"></pre>
+
+  <hr />
+
+  <!-- Coin by ID -->
+  <h2>Join Room by CoinId</h2>
+  <p>
+    <label for="coinId">CoinId:</label>
+    <input type="number" id="coinId" value="1027" style="width: 120px" />
+    <button onclick="joinRoomById()">Join by CoinId</button>
+  </p>
+  <pre id="coinData"></pre>
 </body>
 
 </html>
