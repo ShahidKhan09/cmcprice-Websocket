@@ -1,78 +1,80 @@
-const socketUrl = "http://localhost:8082";
-// const socketUrl = "https://tomipay-staging.tomi.com";
+const socketUrl = "http://localhost:8082"; // adjust if deployed
 
-let connectButton;
-let disconnectButton;
-let socket;
-let statusInput;
-let tokenInput;
+let connectButton, disconnectButton, socket, statusInput;
 
 const connect = () => {
   let error = null;
 
   socket = io(socketUrl, {
     transports: ["websocket", "polling"],
-    // path: "/chats/sockets",
   });
 
   socket.on("connect", () => {
-    console.log("Connected");
+    console.log("Connected with ID:", socket.id);
     statusInput.value = "Connected";
-    console.log(socket.id);
+    document.getElementById("status").style.background = "#c8e6c9";
     connectButton.disabled = true;
     disconnectButton.disabled = false;
 
+    // Ask backend for coin prices
     socket.emit("join_room", {
-      get: { limit: 6, offset: 1 },
+      get: { limit: 6, offset: 0 },
     });
-  });
-
-  socket.on("packet", (reason) => {
-    console.log("Unauthorized:", reason);
-
-    error = reason.message;
-
-    socket.disconnect();
   });
 
   socket.on("disconnect", (reason) => {
     console.log(`Disconnected: ${error || reason}`);
     statusInput.value = `Disconnected: ${error || reason}`;
+    document.getElementById("status").style.background = "#ffcdd2";
     connectButton.disabled = false;
     disconnectButton.disabled = true;
     error = null;
   });
 
   socket.on("error", (payload) => {
-    console.log("error recieved");
-    console.log("payload", payload);
+    console.error("Socket error:", payload);
   });
 
-  socket.on("Veteran_kicked_out", ({ message, accessToken }) => {
-    console.log(message);
-    console.log(accessToken);
-  });
-
-  socket.on("WORK_PROOF_REJECTED", ({ message }) => {
-    console.log(message);
-  });
   socket.on("prices_tomi", (data) => {
-    console.log("data", data);
+    console.log("Received prices_tomi:", data);
+    renderCoins(data.coins || []);
   });
-
-  socket.on("ping", () => {
-    console.log("ping called");
-  });
-  // socket.open();
 };
 
 const disconnect = () => {
-  socket.disconnect();
+  if (socket) socket.disconnect();
 };
 
 document.addEventListener("DOMContentLoaded", () => {
   connectButton = document.getElementById("connect");
   disconnectButton = document.getElementById("disconnect");
   statusInput = document.getElementById("status");
-  tokenInput = document.getElementById("token");
 });
+
+function renderCoins(coins) {
+  const tbody = document.getElementById("coins-table");
+  tbody.innerHTML = "";
+
+  coins.forEach((coin) => {
+    const tr = document.createElement("tr");
+
+    const percent = parseFloat(coin.percent_change_1h || 0);
+    const percentClass = percent >= 0 ? "positive" : "negative";
+
+    tr.innerHTML = `
+      <td><img src="${coin.logo}" alt="${coin.symbol}" /></td>
+      <td>${coin.name}</td>
+      <td>${coin.symbol}</td>
+      <td>$${Number(coin.price).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}</td>
+      <td>$${Number(coin.market_cap).toLocaleString()}</td>
+      <td class="${percentClass}">${percent.toFixed(2)}%</td>
+      <td>$${Number(coin.volume_24h).toLocaleString()}</td>
+      <td><img src="${coin.sparkline_7d}" alt="sparkline"/></td>
+      <td>${new Date(coin.updatedAt).toLocaleString()}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}

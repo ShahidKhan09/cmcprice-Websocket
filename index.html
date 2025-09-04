@@ -3,30 +3,86 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Single User Websocket</title>
+  <title>Crypto Live Prices</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdn.socket.io/4.5.3/socket.io.min.js"
-    integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi"
-    crossorigin="anonymous"></script>
-  <script src="index.js"></script>
+  <script src="https://cdn.socket.io/4.5.3/socket.io.min.js" crossorigin="anonymous"></script>
+  <script src="index.js" defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #fafafa;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    #status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 4px;
+      background: #ddd;
+      margin-bottom: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f0f0f0;
+      text-align: left;
+    }
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .positive {
+      color: green;
+    }
+
+    .negative {
+      color: red;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Single User Websocket Demo</h1>
-  <p>
-    <label for="status">Status: </label>
-    <input type="text" id="status" name="status" value="Disconnected" readonly="readonly" style="width: 300px" />
-  </p>
-  <p>
-    <label for="token">My Token: </label>
-    <input type="text" id="token" name="token" value="secret token" />
-  </p>
-  <p>
-    <button id="connect" onclick="connect()">Connect</button>
-    <button id="disconnect" onclick="disconnect()" disabled>
-      Disconnect
-    </button>
-  </p>
+  <h1>Crypto Prices (Live)</h1>
+  <div id="status">Disconnected</div>
+  <br><br>
+  <button id="connect" onclick="connect()">Connect</button>
+  <button id="disconnect" onclick="disconnect()" disabled>Disconnect</button>
+
+  <h2>Coins</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Logo</th>
+        <th>Name</th>
+        <th>Symbol</th>
+        <th>Price (USD)</th>
+        <th>Market Cap</th>
+        <th>1h %</th>
+        <th>24h Volume</th>
+        <th>Sparkline</th>
+        <th>Updated</th>
+      </tr>
+    </thead>
+    <tbody id="coins-table"></tbody>
+  </table>
 </body>
 
 </html>
