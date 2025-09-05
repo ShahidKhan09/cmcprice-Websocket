@@ -494,7 +494,7 @@
 
                 // Ask backend for coin prices
                 socket.emit("join_room", {
-                    get: { limit: 6, offset: 0 },
+                    get: { limit: 4, offset: 0 },
                 });
             });
 
@@ -518,8 +518,19 @@
         };
 
         const disconnect = () => {
-            if (socket) socket.disconnect();
+            if (socket) {
+                socket.disconnect();
+                console.log("Manually disconnected");
+            }
         };
+
+        // Add event listener for tab close
+        window.addEventListener('beforeunload', (event) => {
+            if (socket && socket.connected) {
+                console.log("Tab is closing, disconnecting socket");
+                socket.disconnect();
+            }
+        });
 
         document.addEventListener("DOMContentLoaded", () => {
             connectButton = document.getElementById("connect");
